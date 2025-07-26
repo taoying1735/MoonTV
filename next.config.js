@@ -22,6 +22,13 @@ const nextConfig = {
   // 压缩配置
   compress: true,
 
+  // 在 Cloudflare Pages 环境下禁用静态生成
+  ...(process.env.CF_PAGES && {
+    trailingSlash: true,
+    skipTrailingSlashRedirect: true,
+    distDir: 'out',
+  }),
+
   // 图片优化配置
   images: {
     unoptimized: true,
@@ -114,4 +121,5 @@ const withPWA = require('next-pwa')({
   skipWaiting: true,
 });
 
-module.exports = withPWA(nextConfig);
+// 在 Cloudflare Pages 环境下完全跳过 PWA 插件
+module.exports = process.env.CF_PAGES ? nextConfig : withPWA(nextConfig);
