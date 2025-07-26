@@ -25,6 +25,9 @@ const nextConfig = {
 
   // 压缩配置
   compress: true,
+  // 优化构建以减少文件大小
+  poweredByHeader: false,
+  generateEtags: false,
 
   // 在 Cloudflare Pages 环境下的基本配置
   ...(process.env.CF_PAGES && {

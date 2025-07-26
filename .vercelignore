@@ -1,0 +1,9 @@
+# 排除缓存文件以减少部署大小
+.next/cache/
+cache/
+node_modules/
+.git/
+.env*
+*.log
+.DS_Store
+Thumbs.db

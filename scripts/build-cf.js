@@ -5,66 +5,64 @@
  * 解决 SSR 环境下的兼容性问题
  */
 
+const fs = require('fs');
 const { spawn } = require('child_process');
 const path = require('path');
+
+// 添加 self polyfill
+console.log('🔧 添加 self polyfill 以支持 SSR...');
+const polyfillPath = path.join(__dirname, '..', 'public', 'self-polyfill.js');
+if (!fs.existsSync(polyfillPath)) {
+  const polyfillContent = `
+if (typeof self === 'undefined') {
+  global.self = global;
+}
+if (typeof window === 'undefined') {
+  global.window = global;
+}
+`;
+  fs.writeFileSync(polyfillPath, polyfillContent);
+}
+
+console.log('🚀 开始 Cloudflare Pages 构建...');
 
 // 设置环境变量
 process.env.CF_PAGES = 'true';
 process.env.NODE_ENV = 'production';
 
-// 在全局环境中添加 self polyfill
-if (typeof global !== 'undefined' && typeof self === 'undefined') {
-  console.log('🔧 添加 self polyfill 以支持 SSR...');
-  
-  // 创建一个更完整的 self 对象
-  const selfPolyfill = {
-    // 基本属性
-    ...global,
-    
-    // 浏览器特有属性（设为 undefined 以避免错误）
-    window: undefined,
-    document: undefined,
-    location: undefined,
-    navigator: undefined,
-    
-    // Webpack chunk 加载支持
-    webpackChunk_N_E: [],
-    
-    // 常用的全局函数
-    setTimeout: global.setTimeout,
-    clearTimeout: global.clearTimeout,
-    setInterval: global.setInterval,
-    clearInterval: global.clearInterval,
-    
-    // 自引用
-    self: undefined
-  };
-  
-  // 设置自引用
-  selfPolyfill.self = selfPolyfill;
-  
-  // 分配到全局
-  global.self = selfPolyfill;
-}
+// 清理缓存文件以减少部署大小
+const cleanupPaths = [
+  path.join(__dirname, '..', '.next', 'cache'),
+  path.join(__dirname, '..', 'cache'),
+];
 
-console.log('🚀 开始 Cloudflare Pages 构建...');
-
-// 运行构建命令，使用 -r 参数预加载 polyfill
-const buildProcess = spawn('node', ['-r', './polyfills/global-self.js', './node_modules/next/dist/bin/next', 'build'], {
-  stdio: 'inherit',
-  shell: false,
-  cwd: process.cwd(),
-  env: {
-    ...process.env,
-    CF_PAGES: 'true'
+cleanupPaths.forEach(cachePath => {
+  if (fs.existsSync(cachePath)) {
+    console.log(`🧹 清理缓存目录: ${cachePath}`);
+    fs.rmSync(cachePath, { recursive: true, force: true });
   }
 });
 
-buildProcess.on('close', (code) => {
+// 执行 Next.js 构建
+const nextBuild = spawn('npx', ['next', 'build'], {
+  stdio: 'inherit',
+  shell: true,
+  env: { ...process.env }
+});
+
+nextBuild.on('close', (code) => {
   if (code === 0) {
     console.log('✅ Cloudflare Pages 构建成功！');
+    
+    // 构建完成后再次清理缓存
+    cleanupPaths.forEach(cachePath => {
+      if (fs.existsSync(cachePath)) {
+        console.log(`🧹 构建后清理缓存: ${cachePath}`);
+        fs.rmSync(cachePath, { recursive: true, force: true });
+      }
+    });
   } else {
-    console.error('❌ Cloudflare Pages 构建失败，退出码:', code);
+    console.error('❌ 构建失败，退出码:', code);
     process.exit(code);
   }
 });
