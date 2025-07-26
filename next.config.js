@@ -52,9 +52,28 @@ const nextConfig = {
   webpack(config, { dev, isServer }) {
     // 为 Cloudflare Pages 环境添加特殊处理
     if (process.env.CF_PAGES && isServer) {
-      // 禁用一些可能导致问题的优化
-      config.optimization.splitChunks = false;
-      config.optimization.minimize = false;
+      // 启用代码分割和最小化以减少 Worker 大小
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        maxSize: 1000000, // 1MB 限制每个 chunk
+        cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            test: /[\/]node_modules[\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all',
+            maxSize: 500000, // 500KB 限制 vendor chunk
+          },
+        },
+      };
+      
+      // 启用最小化以减少文件大小
+      config.optimization.minimize = true;
 
       // 添加全局变量定义
       const webpack = require('webpack');
