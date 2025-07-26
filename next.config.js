@@ -50,24 +50,24 @@ const nextConfig = {
   },
 
   webpack(config, { dev, isServer }) {
-     // 为 Cloudflare Pages 环境添加特殊处理
-     if (process.env.CF_PAGES && isServer) {
-       // 禁用一些可能导致问题的优化
-       config.optimization.splitChunks = false;
-       config.optimization.minimize = false;
-       
-       // 添加全局变量定义
-       const webpack = require('webpack');
-       config.plugins.push(
-         new webpack.DefinePlugin({
-           'typeof self': JSON.stringify('object'),
-           'self': 'globalThis',
-           'typeof global': JSON.stringify('object'),
-           'global': 'globalThis',
-         })
-       );
-     }
-    
+    // 为 Cloudflare Pages 环境添加特殊处理
+    if (process.env.CF_PAGES && isServer) {
+      // 禁用一些可能导致问题的优化
+      config.optimization.splitChunks = false;
+      config.optimization.minimize = false;
+
+      // 添加全局变量定义
+      const webpack = require('webpack');
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'typeof self': JSON.stringify('object'),
+          self: 'globalThis',
+          'typeof global': JSON.stringify('object'),
+          global: 'globalThis',
+        })
+      );
+    }
+
     // 生产环境优化配置
     if (!dev && !process.env.CF_PAGES) {
       // 禁用缓存以减少文件大小

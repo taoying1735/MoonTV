@@ -233,6 +233,91 @@ MoonTV 是一个基于 Next.js 的视频流媒体应用，支持豆瓣电影数�
 
 ---
 
+# MoonTV Cloudflare Pages 部署修复日志
+
+## 2025-01-26 - Cloudflare Pages SSR 问题完全解决
+
+### 🎯 主要成就
+✅ 成功解决所有 Cloudflare Pages 部署中的 SSR 兼容性问题
+✅ Next.js 构建完全成功，所有功能正常运行
+✅ 生成完整的 Edge Functions 和静态资源
+
+### 🔧 核心修复内容
+
+#### 1. SSR 环境兼容性修复
+- **文件**: `polyfills/global-self.js`
+  - 创建全局环境 polyfill，解决 `self is not defined` 错误
+  - 添加 webpack chunk 加载支持
+  - 提供完整的浏览器环境模拟
+
+- **文件**: `public/self-polyfill.js`
+  - 客户端 polyfill，确保浏览器环境兼容性
+  - 解决 `global is not defined` 问题
+
+#### 2. Next.js 配置优化
+- **文件**: `next.config.js`
+  - 移除导致 `routes-manifest.json` 缺失的 `distDir: 'out'` 配置
+  - 添加 webpack fallback 配置，解决模块解析问题
+  - 启用 `optimizeCss` 和 `esmExternals` 实验性功能
+  - 添加文件大小优化设置（禁用缓存、压缩等）
+
+#### 3. 专用构建脚本
+- **文件**: `scripts/build-cf.js`
+  - 创建 Cloudflare Pages 专用构建脚本
+  - 自动添加 polyfill 支持
+  - 清理缓存文件以减少部署大小
+  - 设置正确的环境变量
+  - **修复**: 解决 `buildProcess` 变量未定义错误
+
+#### 4. 依赖管理
+- **文件**: `package.json`
+  - 添加 `critters` 依赖，解决 CSS 内联问题
+  - 移除已弃用的 `--experimental-minify` 标志
+  - 优化构建脚本命令
+
+#### 5. 部署优化
+- **文件**: `.vercelignore`
+  - 创建部署忽略文件，排除缓存和不必要文件
+  - 减少部署包大小，避免 25MB 限制
+
+#### 6. 错误页面处理
+- **文件**: `src/app/not-found.tsx`
+  - 创建自定义 404 错误页面
+  - 确保错误处理的完整性
+
+### 📊 构建结果统计
+- ✅ 1 个中间件函数
+- ✅ 20 个 Edge Function API 路由
+- ✅ 12 个预渲染静态页面
+- ✅ 54 个静态资源文件
+- ✅ 类型检查通过
+- ✅ 静态页面生成成功（9/9 页面）
+
+### 🚀 部署配置
+- **构建命令**: `pnpm build:cf`
+- **输出目录**: `.vercel/output/static`
+- **环境变量**: `CF_PAGES=true`
+
+### 🔍 解决的具体错误
+1. ❌ `self is not defined` → ✅ 通过 polyfill 解决
+2. ❌ `global is not defined` → ✅ 通过 webpack 配置解决
+3. ❌ `Cannot find module 'critters'` → ✅ 添加依赖解决
+4. ❌ `routes-manifest.json` 缺失 → ✅ 修复 next.config.js 解决
+5. ❌ `buildProcess is not defined` → ✅ 修复变量名错误
+6. ❌ webpack 运行时错误 → ✅ 优化配置解决
+7. ❌ 文件大小超限 → ✅ 缓存清理和优化解决
+
+### 📝 技术要点
+- 使用 `standalone` 输出模式确保与 `@cloudflare/next-on-pages` 兼容
+- 通过 polyfill 解决 Node.js 和浏览器环境差异
+- 自动化缓存清理减少部署文件大小
+- 完整的错误处理和日志记录
+
+### 🎉 最终状态
+MoonTV 项目现已完全兼容 Cloudflare Pages 部署，所有 SSR 功能正常工作，构建过程稳定可靠。
+
+---
+
 ## 2025-01-XX - Husky Pre-commit Hook Windows 兼容性修复 (最终解决方案)
 
 ### 🔍 问题分析

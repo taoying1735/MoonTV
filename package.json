@@ -21,8 +21,11 @@
     "prepare": "husky install",
     "prepare:win": "if exist .husky (echo Husky already installed) else (npx husky install)",
     "lint:pre-commit": "lint-staged",
-    "commit:safe": "pnpm lint:pre-commit && git commit",
+    "lint:check": "pnpm lint:strict && pnpm typecheck && pnpm format:check",
+    "lint:fix": "pnpm lint:strict && pnpm typecheck && pnpm format",
+    "commit:safe": "pnpm lint:check && git commit",
     "commit:force": "git commit --no-verify",
+    "commit:msg-check": "npx commitlint --edit",
     "pages:build": "pnpm build:cf",
     "clean": "powershell -Command \"Remove-Item -Recurse -Force .next, out, cache -ErrorAction SilentlyContinue\" && pnpm gen:runtime && pnpm gen:manifest"
   },

@@ -36,7 +36,7 @@ const cleanupPaths = [
   path.join(__dirname, '..', 'cache'),
 ];
 
-cleanupPaths.forEach(cachePath => {
+cleanupPaths.forEach((cachePath) => {
   if (fs.existsSync(cachePath)) {
     console.log(`🧹 清理缓存目录: ${cachePath}`);
     fs.rmSync(cachePath, { recursive: true, force: true });
@@ -47,15 +47,15 @@ cleanupPaths.forEach(cachePath => {
 const nextBuild = spawn('npx', ['next', 'build'], {
   stdio: 'inherit',
   shell: true,
-  env: { ...process.env }
+  env: { ...process.env },
 });
 
 nextBuild.on('close', (code) => {
   if (code === 0) {
     console.log('✅ Cloudflare Pages 构建成功！');
-    
+
     // 构建完成后再次清理缓存
-    cleanupPaths.forEach(cachePath => {
+    cleanupPaths.forEach((cachePath) => {
       if (fs.existsSync(cachePath)) {
         console.log(`🧹 构建后清理缓存: ${cachePath}`);
         fs.rmSync(cachePath, { recursive: true, force: true });

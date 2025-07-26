@@ -6,29 +6,29 @@ if (typeof global !== 'undefined' && typeof self === 'undefined') {
   const selfPolyfill = {
     // Basic properties
     ...global,
-    
+
     // Browser-like properties
     window: undefined,
     document: undefined,
     location: undefined,
     navigator: undefined,
-    
+
     // Webpack chunk loading support
     webpackChunk_N_E: [],
-    
+
     // Common browser globals that might be expected
     setTimeout: global.setTimeout,
     clearTimeout: global.clearTimeout,
     setInterval: global.setInterval,
     clearInterval: global.clearInterval,
-    
+
     // Self-reference
-    self: undefined
+    self: undefined,
   };
-  
+
   // Set self-reference
   selfPolyfill.self = selfPolyfill;
-  
+
   // Assign to global
   global.self = selfPolyfill;
 }
