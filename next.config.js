@@ -2,7 +2,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const nextConfig = {
   // 针对 Cloudflare Pages 优化输出模式
-  output: process.env.CF_PAGES ? 'export' : 'standalone',
+  // 暂时不使用 export 模式，让 @cloudflare/next-on-pages 处理
+  // output: process.env.CF_PAGES ? 'export' : 'standalone',
+  output: 'standalone',
 
   eslint: {
     dirs: ['src'],
@@ -17,6 +19,10 @@ const nextConfig = {
     optimizeCss: true,
     // 启用 gzip 压缩
     gzipSize: true,
+    // 为 Cloudflare Pages 添加特殊配置
+    ...(process.env.CF_PAGES && {
+      esmExternals: false,
+    }),
   },
 
   // 压缩配置
@@ -44,9 +50,27 @@ const nextConfig = {
     ],
   },
 
-  webpack(config, { dev }) {
+  webpack(config, { dev, isServer }) {
+     // 为 Cloudflare Pages 环境添加特殊处理
+     if (process.env.CF_PAGES && isServer) {
+       // 禁用一些可能导致问题的优化
+       config.optimization.splitChunks = false;
+       config.optimization.minimize = false;
+       
+       // 添加全局变量定义
+       const webpack = require('webpack');
+       config.plugins.push(
+         new webpack.DefinePlugin({
+           'typeof self': JSON.stringify('object'),
+           'self': 'globalThis',
+           'typeof global': JSON.stringify('object'),
+           'global': 'globalThis',
+         })
+       );
+     }
+    
     // 生产环境优化配置
-    if (!dev) {
+    if (!dev && !process.env.CF_PAGES) {
       // 禁用缓存以减少文件大小
       config.cache = false;
 
@@ -62,7 +86,7 @@ const nextConfig = {
               reuseExistingChunk: true,
             },
             vendor: {
-              test: /[\\/]node_modules[\\/]/,
+              test: /[\/]node_modules[\/]/,
               name: 'vendors',
               priority: -10,
               chunks: 'all',
@@ -104,6 +128,7 @@ const nextConfig = {
     // 解析回退配置
     config.resolve.fallback = {
       ...config.resolve.fallback,
+      fs: false,
       net: false,
       tls: false,
       crypto: false,
