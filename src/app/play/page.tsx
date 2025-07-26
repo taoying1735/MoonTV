@@ -2,8 +2,6 @@
 
 'use client';
 
-import Artplayer from 'artplayer';
-import Hls from 'hls.js';
 import { Heart } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useRef, useState } from 'react';
@@ -165,6 +163,65 @@ function PlayPageClient() {
 
   const artPlayerRef = useRef<any>(null);
   const artRef = useRef<HTMLDivElement | null>(null);
+
+  // 动态导入的库状态
+  const [Artplayer, setArtplayer] = useState<any>(null);
+  const [Hls, setHls] = useState<any>(null);
+  const [librariesLoaded, setLibrariesLoaded] = useState(false);
+
+  // 动态导入 Artplayer 和 Hls.js
+  useEffect(() => {
+    const loadLibraries = async () => {
+      try {
+        // 动态导入 Artplayer
+        const artplayerModule = await import('artplayer');
+        setArtplayer(artplayerModule.default);
+
+        // 动态导入 Hls.js
+        const hlsModule = await import('hls.js');
+        setHls(hlsModule.default);
+
+        setLibrariesLoaded(true);
+      } catch (error) {
+        console.error('Failed to load video libraries:', error);
+      }
+    };
+
+    loadLibraries();
+  }, []);
+
+  // 创建自定义 HLS 加载器的工厂函数
+  const createCustomHlsLoader = (HlsClass: any) => {
+    return class CustomHlsJsLoader extends HlsClass.DefaultConfig.loader {
+      constructor(config: any) {
+        super(config);
+        const load = this.load.bind(this);
+        this.load = function (context: any, config: any, callbacks: any) {
+          // 拦截manifest和level请求
+          if (
+            (context as any).type === 'manifest' ||
+            (context as any).type === 'level'
+          ) {
+            const onSuccess = callbacks.onSuccess;
+            callbacks.onSuccess = function (
+              response: any,
+              stats: any,
+              context: any
+            ) {
+              // 如果是m3u8文件，处理内容以移除广告分段
+              if (response.data && typeof response.data === 'string') {
+                // 过滤掉广告段 - 实现更精确的广告过滤逻辑
+                response.data = filterAdsFromM3U8(response.data);
+              }
+              return onSuccess(response, stats, context, null);
+            };
+          }
+          // 执行原始load方法
+          load(context, config, callbacks);
+        };
+      }
+    };
+  };
 
   // -----------------------------------------------------------------------------
   // 工具函数（Utils）
@@ -426,36 +483,6 @@ function PlayPageClient() {
     }
 
     return filteredLines.join('\n');
-  }
-
-  class CustomHlsJsLoader extends Hls.DefaultConfig.loader {
-    constructor(config: any) {
-      super(config);
-      const load = this.load.bind(this);
-      this.load = function (context: any, config: any, callbacks: any) {
-        // 拦截manifest和level请求
-        if (
-          (context as any).type === 'manifest' ||
-          (context as any).type === 'level'
-        ) {
-          const onSuccess = callbacks.onSuccess;
-          callbacks.onSuccess = function (
-            response: any,
-            stats: any,
-            context: any
-          ) {
-            // 如果是m3u8文件，处理内容以移除广告分段
-            if (response.data && typeof response.data === 'string') {
-              // 过滤掉广告段 - 实现更精确的广告过滤逻辑
-              response.data = filterAdsFromM3U8(response.data);
-            }
-            return onSuccess(response, stats, context, null);
-          };
-        }
-        // 执行原始load方法
-        load(context, config, callbacks);
-      };
-    }
   }
 
   // 当集数索引变化时自动更新视频地址
@@ -1000,6 +1027,7 @@ function PlayPageClient() {
 
   useEffect(() => {
     if (
+      !librariesLoaded ||
       !Artplayer ||
       !Hls ||
       !videoUrl ||
@@ -1120,7 +1148,7 @@ function PlayPageClient() {
 
               /* 自定义loader */
               loader: blockAdEnabledRef.current
-                ? CustomHlsJsLoader
+                ? createCustomHlsLoader(Hls)
                 : Hls.DefaultConfig.loader,
             });
 
@@ -1284,7 +1312,7 @@ function PlayPageClient() {
       console.error('创建播放器失败:', err);
       setError('播放器初始化失败');
     }
-  }, [Artplayer, Hls, videoUrl, loading, blockAdEnabled]);
+  }, [librariesLoaded, Artplayer, Hls, videoUrl, loading, blockAdEnabled]);
 
   // 当组件卸载时清理定时器
   useEffect(() => {

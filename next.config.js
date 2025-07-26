@@ -108,7 +108,8 @@ const nextConfig = {
 
 const withPWA = require('next-pwa')({
   dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
+  // 在开发环境或 Cloudflare Pages 构建环境下禁用 PWA
+  disable: process.env.NODE_ENV === 'development' || process.env.CF_PAGES,
   register: true,
   skipWaiting: true,
 });
