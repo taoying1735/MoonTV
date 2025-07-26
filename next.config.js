@@ -2,8 +2,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const nextConfig = {
   // 针对 Cloudflare Pages 优化输出模式
-  // 暂时不使用 export 模式，让 @cloudflare/next-on-pages 处理
-  // output: process.env.CF_PAGES ? 'export' : 'standalone',
   output: 'standalone',
 
   eslint: {
@@ -28,11 +26,9 @@ const nextConfig = {
   // 压缩配置
   compress: true,
 
-  // 在 Cloudflare Pages 环境下禁用静态生成
+  // 在 Cloudflare Pages 环境下的基本配置
   ...(process.env.CF_PAGES && {
-    trailingSlash: true,
-    skipTrailingSlashRedirect: true,
-    distDir: 'out',
+    trailingSlash: false,
   }),
 
   // 图片优化配置
