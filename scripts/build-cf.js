@@ -67,7 +67,8 @@ nextBuild.on('close', (code) => {
   }
 });
 
-buildProcess.on('error', (error) => {
+// 修复：使用正确的变量名 nextBuild 而不是 buildProcess
+nextBuild.on('error', (error) => {
   console.error('❌ 构建过程中发生错误:', error);
   process.exit(1);
 });
