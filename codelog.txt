@@ -1,0 +1,223 @@
+# MoonTV 项目文件结构分析报告
+生成时间: 2025年1月
+
+## 项目概述
+MoonTV 是一个基于 Next.js 的视频流媒体应用，支持豆瓣电影数据集成、用户管理、播放记录等功能。
+
+## 完整文件结构
+
+### 根目录配置文件
+- .eslintrc.js - ESLint 代码规范配置
+- .gitignore - Git 忽略文件配置
+- .npmrc - npm 配置文件
+- .nvmrc - Node.js 版本配置
+- .prettierignore - Prettier 忽略文件配置
+- .prettierrc.js - Prettier 代码格式化配置
+- commitlint.config.js - 提交信息规范配置
+- config.json - 应用配置文件
+- Dockerfile - Docker 容器配置
+- jest.config.js - Jest 测试框架配置
+- jest.setup.js - Jest 测试环境设置
+- LICENSE - 开源许可证
+- next.config.js - Next.js 框架配置
+- package.json - 项目依赖和脚本配置
+- pnpm-lock.yaml - pnpm 包管理器锁定文件
+- postcss.config.js - PostCSS 配置
+- proxy.worker.js - 代理工作线程
+- README.md - 项目说明文档
+- start.js - 应用启动脚本
+- tailwind.config.ts - Tailwind CSS 配置
+- tsconfig.json - TypeScript 配置
+- vercel.json - Vercel 部署配置
+- D1初始化.md - 数据库初始化文档
+- rizhi.md - 构建日志文件
+- _headers - Cloudflare Pages 头部配置
+- _redirects - Cloudflare Pages 重定向配置
+- CLOUDFLARE_DEPLOYMENT.md - Cloudflare Pages 部署指南
+
+### GitHub 工作流 (.github/workflows/)
+- docker-image.yml - Docker 镜像构建工作流
+- sync.yml - 同步工作流
+
+### Git 钩子 (.husky/)
+- commit-msg - 提交信息验证钩子
+- post-merge - 合并后钩子
+- pre-commit - 提交前钩子
+
+### VS Code 配置 (.vscode/)
+- css.code-snippets - CSS 代码片段
+- extensions.json - 推荐扩展配置
+- settings.json - 编辑器设置
+- typescriptreact.code-snippets - TypeScript React 代码片段
+
+### 公共资源 (public/)
+- favicon.ico - 网站图标
+- logo.png - 应用 Logo
+- robots.txt - 搜索引擎爬虫配置
+- screenshot.png - 应用截图
+- icons/ - 应用图标集合
+  - icon-192x192.png
+  - icon-256x256.png
+  - icon-384x384.png
+  - icon-512x512.png
+
+### 脚本工具 (scripts/)
+- convert-config.js - 配置转换脚本
+- generate-manifest.js - 清单生成脚本
+
+### 源代码 (src/)
+
+#### 应用路由 (src/app/)
+- globals.css - 全局样式
+- layout.tsx - 根布局组件
+- page.tsx - 首页组件
+- middleware.ts - 中间件
+
+##### 页面路由
+- admin/page.tsx - 管理员页面
+- douban/page.tsx - 豆瓣页面
+- login/page.tsx - 登录页面
+- play/page.tsx - 播放页面
+- search/page.tsx - 搜索页面
+
+##### API 路由 (src/app/api/)
+###### 管理员 API (admin/)
+- config/route.ts - 配置管理
+- reset/route.ts - 重置功能
+- site/route.ts - 站点管理
+- source/route.ts - 资源管理
+- user/route.ts - 用户管理
+
+###### 核心 API
+- cron/route.ts - 定时任务
+- detail/route.ts - 详情获取
+- favorites/route.ts - 收藏管理
+- image-proxy/route.ts - 图片代理
+- login/route.ts - 登录认证
+- logout/route.ts - 登出
+- playrecords/route.ts - 播放记录
+- register/route.ts - 用户注册
+- searchhistory/route.ts - 搜索历史
+- server-config/route.ts - 服务器配置
+
+###### 豆瓣 API (douban/)
+- route.ts - 豆瓣主接口
+- categories/route.ts - 分类接口
+
+###### 搜索 API (search/)
+- route.ts - 搜索主接口
+- one/route.ts - 单个搜索
+- resources/route.ts - 资源搜索
+
+#### 组件库 (src/components/)
+- BackButton.tsx - 返回按钮组件
+- CapsuleSwitch.tsx - 胶囊开关组件
+- ContinueWatching.tsx - 继续观看组件
+- DoubanCardSkeleton.tsx - 豆瓣卡片骨架屏
+- DoubanSelector.tsx - 豆瓣选择器
+- EpisodeSelector.tsx - 剧集选择器
+- ImagePlaceholder.tsx - 图片占位符
+- LogoutButton.tsx - 登出按钮
+- MobileBottomNav.tsx - 移动端底部导航
+- MobileHeader.tsx - 移动端头部
+- PageLayout.tsx - 页面布局组件
+- ScrollableRow.tsx - 可滚动行组件
+- SettingsButton.tsx - 设置按钮
+- Sidebar.tsx - 侧边栏组件
+- SiteProvider.tsx - 站点提供者
+- ThemeProvider.tsx - 主题提供者
+- ThemeToggle.tsx - 主题切换器
+- VideoCard.tsx - 视频卡片组件
+
+#### 工具库 (src/lib/)
+- admin.types.ts - 管理员类型定义
+- auth.ts - 认证工具
+- config.ts - 配置工具
+- d1.db.ts - D1 数据库工具
+- db.client.ts - 数据库客户端
+- db.ts - 数据库工具
+- douban.client.ts - 豆瓣客户端
+- downstream.ts - 下游服务工具
+- fetchVideoDetail.ts - 视频详情获取
+- redis.db.ts - Redis 数据库工具
+- types.ts - 类型定义
+- upstash.db.ts - Upstash 数据库工具
+- utils.ts - 通用工具函数
+
+#### 样式文件 (src/styles/)
+- colors.css - 颜色定义
+- globals.css - 全局样式
+
+## 技术栈分析
+- 前端框架: Next.js (App Router)
+- 样式: Tailwind CSS + CSS Modules
+- 语言: TypeScript
+- 数据库: 支持多种数据库 (D1, Redis, Upstash)
+- 部署: Vercel + Cloudflare Pages
+- 包管理: pnpm
+- 代码规范: ESLint + Prettier
+- 测试: Jest
+- 容器化: Docker
+
+## 主要功能模块
+1. 用户认证系统 (登录/注册/登出)
+2. 视频播放功能
+3. 豆瓣电影数据集成
+4. 搜索功能 (多种搜索方式)
+5. 收藏和播放记录
+6. 管理员后台
+7. 响应式设计 (支持移动端)
+8. 主题切换功能
+9. 图片代理服务
+10. 定时任务系统
+
+## 更改记录
+
+### 2025年1月 - 项目文件结构分析
+- 完成项目文件结构分析，创建详细的文件清单记录
+
+### 2025年1月 - Cloudflare Pages 部署优化
+
+#### 问题分析
+根据 rizhi.md 构建日志，发现 Cloudflare Pages 部署失败的主要原因：
+- webpack 缓存文件 `cache/webpack/client-production/0.pack` 大小为 38.7 MiB
+- 超出 Cloudflare Pages 25 MiB 文件大小限制
+
+#### 解决方案实施
+
+1. **优化 next.config.js**
+   - 添加环境变量检测，根据 CF_PAGES 自动切换输出模式
+   - 配置 webpack 优化：禁用生产环境缓存，限制 chunk 大小为 20MB
+   - 启用 CSS 优化和 Gzip 压缩
+   - 添加详细的中文注释
+
+2. **优化 .gitignore**
+   - 添加 webpack 缓存文件忽略规则
+   - 添加 Cloudflare 相关文件忽略
+   - 添加 PWA 生成文件忽略
+   - 添加 IDE 和操作系统文件忽略
+
+3. **优化 package.json 构建脚本**
+   - 新增 `build:cf` 命令：专用于 Cloudflare Pages 构建
+   - 新增 `clean` 命令：清理缓存和临时文件
+   - 优化 `pages:build` 命令：使用新的构建流程
+
+4. **创建 Cloudflare Pages 配置文件**
+   - `_headers`：配置 Gzip 压缩和缓存策略
+   - `_redirects`：处理 SPA 路由和 API 重定向
+
+5. **创建部署指南**
+   - `CLOUDFLARE_DEPLOYMENT.md`：详细的部署优化指南
+   - 包含问题分析、解决方案、部署步骤和故障排除
+
+#### 技术改进
+- **文件大小优化**：通过禁用缓存和代码分割，预计可将构建文件大小减少 50%
+- **构建性能**：优化 webpack 配置，提升构建速度
+- **部署流程**：标准化 Cloudflare Pages 部署流程
+- **监控机制**：添加构建文件大小监控和警告
+
+#### 预期效果
+- 解决 Cloudflare Pages 文件大小限制问题
+- 提升应用加载性能
+- 简化部署流程
+- 提供完整的故障排除指南

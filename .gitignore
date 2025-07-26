@@ -15,6 +15,12 @@
 # production
 /build
 
+# webpack cache (解决 Cloudflare Pages 文件大小限制)
+.next/cache/
+.next/static/chunks/
+.next/static/webpack/
+cache/
+
 # misc
 .DS_Store
 *.pem
@@ -32,6 +38,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cloudflare
+.wrangler/
+wrangler.toml
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -43,3 +53,20 @@ sitemap-*.xml
 # generated files
 src/lib/runtime.ts
 public/manifest.json
+
+# PWA files
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

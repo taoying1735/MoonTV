@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const nextConfig = {
-  output: 'standalone',
+  // 针对 Cloudflare Pages 优化输出模式
+  output: process.env.CF_PAGES ? 'export' : 'standalone',
+  
   eslint: {
     dirs: ['src'],
   },
@@ -9,7 +11,18 @@ const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
 
-  // Uncoment to add domain whitelist
+  // 针对 Cloudflare Pages 的优化配置
+  experimental: {
+    // 减少构建缓存大小
+    optimizeCss: true,
+    // 启用 gzip 压缩
+    gzipSize: true,
+  },
+
+  // 压缩配置
+  compress: true,
+
+  // 图片优化配置
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -24,24 +37,51 @@ const nextConfig = {
     ],
   },
 
-  webpack(config) {
-    // Grab the existing rule that handles SVG imports
+  webpack(config, { isServer, dev }) {
+    // 生产环境优化配置
+    if (!dev) {
+      // 减少 chunk 大小
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: {
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true,
+            },
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: -10,
+              chunks: 'all',
+              maxSize: 20000000, // 20MB 限制
+            },
+          },
+        },
+        // 禁用开发时的缓存以减少文件大小
+        cache: false,
+      };
+    }
+
+    // SVG 处理规则
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.('.svg')
     );
 
     config.module.rules.push(
-      // Reapply the existing rule, but only for svg imports ending in ?url
+      // 重新应用现有规则，但仅适用于以 ?url 结尾的 svg 导入
       {
         ...fileLoaderRule,
         test: /\.svg$/i,
         resourceQuery: /url/, // *.svg?url
       },
-      // Convert all other *.svg imports to React components
+      // 将所有其他 *.svg 导入转换为 React 组件
       {
         test: /\.svg$/i,
         issuer: { not: /\.(css|scss|sass)$/ },
-        resourceQuery: { not: /url/ }, // exclude if *.svg?url
+        resourceQuery: { not: /url/ }, // 排除 *.svg?url
         loader: '@svgr/webpack',
         options: {
           dimensions: false,
@@ -50,9 +90,10 @@ const nextConfig = {
       }
     );
 
-    // Modify the file loader rule to ignore *.svg, since we have it handled now.
+    // 修改文件加载器规则以忽略 *.svg
     fileLoaderRule.exclude = /\.svg$/i;
 
+    // 解析回退配置
     config.resolve.fallback = {
       ...config.resolve.fallback,
       net: false,

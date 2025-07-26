@@ -1,0 +1,15 @@
+# Cloudflare Pages 重定向配置
+# 用于处理 SPA 路由
+
+# 处理 Next.js 动态路由
+/play/* /play/index.html 200
+/search/* /search/index.html 200
+/admin/* /admin/index.html 200
+/douban/* /douban/index.html 200
+/login/* /login/index.html 200
+
+# API 路由重定向到 Cloudflare Functions
+/api/* /api/:splat 200
+
+# 404 页面处理
+/* /404.html 404
