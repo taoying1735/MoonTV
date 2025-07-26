@@ -1,4 +1,5 @@
 module.exports = {
+  root: true, // 防止 ESLint 向上查找配置文件
   env: {
     browser: true,
     es2021: true,

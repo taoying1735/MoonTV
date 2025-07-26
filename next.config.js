@@ -3,7 +3,7 @@
 const nextConfig = {
   // 针对 Cloudflare Pages 优化输出模式
   output: process.env.CF_PAGES ? 'export' : 'standalone',
-  
+
   eslint: {
     dirs: ['src'],
   },
@@ -37,9 +37,12 @@ const nextConfig = {
     ],
   },
 
-  webpack(config, { isServer, dev }) {
+  webpack(config, { dev }) {
     // 生产环境优化配置
     if (!dev) {
+      // 禁用缓存以减少文件大小
+      config.cache = false;
+
       // 减少 chunk 大小
       config.optimization = {
         ...config.optimization,
@@ -60,8 +63,6 @@ const nextConfig = {
             },
           },
         },
-        // 禁用开发时的缓存以减少文件大小
-        cache: false,
       };
     }
 
