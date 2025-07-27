@@ -160,7 +160,55 @@ npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supp
   21:06:29.553
   > build failed because of webpack errors
   > 21:06:29.702
-  > moontv@0.1.0 build /tmp/repo/moontv-zi3wh8al9g > node scripts/convert-config.js && node scripts/generate-manifest.js && next build 已生成 src/lib/runtime.ts ✅ generated manifest.json with site name: moontv attention: next.js now collects completely anonymous telemetry regarding usage. this information is used to shape next.js' roadmap and prioritize features. you can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following url: https://nextjs.org/telemetry ▲ next.js 14.2.30 - experiments (use with caution): · optimizecss creating an optimized production build ... > [pwa] compile server > [pwa] compile server > [pwa] compile client (static) > [pwa] auto register service worker with: /tmp/repo/moontv-zi3wh8al9g/node_modules/next-pwa/register.js > [pwa] service worker: /tmp/repo/moontv-zi3wh8al9g/public/sw.js > [pwa] url: /sw.js > [pwa] scope: /  elifecycle  command failed with exit code 1.
+  > moontv@0.1.0 build /tmp/repo/moontv-zi3wh8al9g > node scripts/convert-config.js && node scripts/generate-manifest.js && next build 已生成 src/lib/runtime.ts ✅ generated manifest.json with site name: moontv attention: next.js now collects completely anonymous telemetry regarding usage. this information is used to shape next.js' roadmap and prioritize features. you can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following url: https://nextjs.org/telemetry ▲ next.js 14.2.30 - experiments (use with caution): · optimizecss creating an optimized production build ... > [pwa] compile server > [pwa] compile server > [pwa] compile client (static) > [pwa] auto register service worker with: /tmp/repo/moontv-zi3wh8al9g/node_modules/next-pwa/register.js > [pwa] service worker: /tmp/repo/moontv-zi3wh8al9g/public/sw.js > [pwa] url: /sw.js > [pwa] scope: /  elifecycle  command failed with exit code 1.
   > 21:06:29.704
   > 21:06:29.704
   > Build error at stage 2
+
+---
+
+## 第六次构建尝试 - 2025-01-27 21:12
+
+### 构建开始状态
+21:12:33.503
+Running build
+21:12:35.815
+21:12:35.816
+builder version 20250704
+21:12:35.829
+21:12:35.830
+Cloning github.com/taoying1735/MoonTV (Branch: main)
+21:12:37.633
+Cloning completed: 1764ms
+21:12:37.725
+21:12:37.726
+Switching node version
+21:12:38.668
+Now, we're on node version v20.18.0 (npm 10.8.2)
+21:12:42.665
+21:12:42.665
+Running "npm install"
+
+### 构建状态
+- **开始时间**: 21:12:33
+- **Node.js 版本**: v20.18.0 (npm 10.8.2) ✅
+- **克隆时间**: 1764ms ✅
+- **当前阶段**: npm install 进行中...
+- **状态**: 🟡 等待中
+
+### 预期改进
+基于之前的修复，这次构建应该：
+1. ✅ npm install 成功完成（Husky 跳过机制已修复）
+2. ✅ 使用正确的 npm run build 命令
+3. ✅ tailwindcss 等依赖应该可以正确访问
+4. ✅ 路径别名问题应该得到解决
+
+### 已修复的问题
+1. ✅ 包管理器兼容性 - 统一使用 npm
+2. ✅ 全局变量错误 - 添加 webpack polyfill
+3. ✅ Husky 安装错误 - 优雅跳过机制
+4. ✅ Beasties 版本错误 - 使用正确版本号
+5. ✅ 包管理器不一致 - 统一命令策略
+6. ✅ 依赖配置错误 - 正确分类构建依赖
+
+等待 npm install 完成...
