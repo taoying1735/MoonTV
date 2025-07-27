@@ -50,6 +50,17 @@ const nextConfig = {
   },
 
   webpack(config, { dev, isServer }) {
+    // 添加全局变量定义，解决 "self is not defined" 错误
+    const webpack = require('webpack');
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        'typeof self': JSON.stringify('object'),
+        self: 'globalThis',
+        'typeof global': JSON.stringify('object'),
+        global: 'globalThis',
+      })
+    );
+
     // 为 Cloudflare Pages 环境添加特殊处理
     if (process.env.CF_PAGES && isServer) {
       // 启用代码分割和最小化以减少 Worker 大小
@@ -74,17 +85,6 @@ const nextConfig = {
       
       // 启用最小化以减少文件大小
       config.optimization.minimize = true;
-
-      // 添加全局变量定义
-      const webpack = require('webpack');
-      config.plugins.push(
-        new webpack.DefinePlugin({
-          'typeof self': JSON.stringify('object'),
-          self: 'globalThis',
-          'typeof global': JSON.stringify('object'),
-          global: 'globalThis',
-        })
-      );
     }
 
     // 生产环境优化配置

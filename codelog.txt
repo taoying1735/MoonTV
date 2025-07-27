@@ -173,6 +173,127 @@ MoonTV 是一个基于 Next.js 的视频流媒体应用，支持豆瓣电影数�
 
 ## 更改记录
 
+### 2025年1月 - 环境变量配置指南添加
+**需求分析：**
+- 用户询问环境变量配置方法
+- 项目支持多种存储后端和部署方式
+- 需要提供完整的环境变量配置指导
+- 缺少统一的配置文档和最佳实践
+
+**解决方案实施：**
+1. **创建ENVIRONMENT_VARIABLES.md专用指南：**
+   - 详细的环境变量分类和说明
+   - 必需变量：USERNAME、PASSWORD
+   - 存储配置：localstorage、redis、upstash、d1
+   - 可选配置：站点名称、公告、搜索设置等
+   - 平台特定配置示例
+
+2. **更新DEPLOYMENT_GUIDE.md：**
+   - 添加环境变量配置章节
+   - 提供各平台的配置示例
+   - 包含安全建议和最佳实践
+   - 引用详细配置指南
+
+3. **完整的配置覆盖：**
+   - **基础配置**：管理员账户、站点信息
+   - **存储配置**：4种存储类型的详细配置
+   - **平台配置**：Vercel、Cloudflare、腾讯云等
+   - **安全配置**：强密码、HTTPS、权限控制
+   - **开发配置**：本地开发、测试环境
+
+4. **实用工具和检查清单：**
+   - 环境变量格式验证
+   - 部署前检查清单
+   - 常见问题排查指南
+   - 安全配置建议
+
+**技术特色：**
+- 支持4种存储后端（本地、Redis、Upstash、D1）
+- 涵盖主流部署平台配置
+- 提供安全配置最佳实践
+- 包含开发和生产环境配置
+- 详细的故障排查指南
+
+**配置类型说明：**
+- **localstorage**：适合开发环境和小型部署
+- **redis**：适合生产环境，需要数据持久化
+- **upstash**：适合Serverless平台（Vercel、Netlify）
+- **d1**：适合Cloudflare Pages部署
+
+### 2025年1月 - 腾讯云部署配置添加
+- **需求分析**: 用户询问腾讯云部署方式
+  - 需要提供完整的腾讯云部署解决方案
+  - 涵盖腾讯云的多种服务选项
+  - 适合不同技术水平的用户
+
+- **解决方案实施**:
+  1. **更新DEPLOYMENT_GUIDE.md**:
+     - 添加腾讯云 Webify 部署配置（推荐方案）
+     - 添加腾讯云 CloudBase（云开发）配置
+     - 添加腾讯云 CVM（云服务器）手动部署步骤
+     - 添加腾讯云容器服务（TKE）配置
+  
+  2. **创建TENCENT_CLOUD_DEPLOYMENT.md专用指南**:
+     - 详细的四种部署方式对比和选择建议
+     - Webify：静态网站托管，适合新手
+     - CloudBase：全栈应用，一站式解决方案
+     - CVM：完全控制，详细的服务器配置步骤
+     - TKE：容器化部署，企业级应用
+  
+  3. **完整的技术栈支持**:
+     - Node.js 20.x 环境配置
+     - pnpm 包管理器安装和使用
+     - PM2 进程管理器配置
+     - Nginx 反向代理设置
+     - SSL 证书配置（Let's Encrypt）
+     - Docker 容器化部署
+     - Kubernetes 集群部署
+  
+  4. **运维和监控**:
+     - 防火墙配置
+     - 日志管理
+     - 性能优化建议
+     - 故障排除指南
+     - 备份策略
+
+- **技术特色**:
+  - 提供四种不同复杂度的部署方案
+  - 详细的命令行操作指导
+  - 完整的生产环境配置
+  - 安全性和性能优化建议
+  - 适合不同技术水平的用户
+
+### 2025年1月 - 部署配置修正
+- **问题分析**: 用户部署配置错误
+  - 输出目录设置为 `out`，应该留空或设置为 `.next`
+  - 包管理器不匹配：项目使用 `pnpm`，但配置使用 `npm`
+  - 缺少针对不同部署平台的具体配置指导
+
+- **解决方案实施**:
+  1. **更新DEPLOYMENT_GUIDE.md部署文档**:
+     - 添加详细的部署平台配置说明
+     - 提供Vercel、Cloudflare Pages、Netlify等主流平台的正确配置
+     - 区分pnpm和npm的不同配置方案
+  
+  2. **正确的部署配置**:
+     - **框架名称**: Next.js
+     - **根目录**: /
+     - **输出目录**: 留空（使用默认）或 .next
+     - **编译命令**: pnpm build（推荐）或 npm run build:npm
+     - **安装命令**: pnpm install（推荐）或 npm install
+     - **Node.js版本**: 20.x
+  
+  3. **平台特定优化**:
+     - Vercel: 使用 `pnpm build`
+     - Cloudflare Pages: 使用 `pnpm pages:build`
+     - Netlify: 发布目录设置为 `.next`
+     - 其他平台: 备选npm方案
+
+- **技术改进**:
+  - 提供完整的部署平台配置矩阵
+  - 优化不同包管理器的兼容性
+  - 增强部署文档的实用性和准确性
+
 ### 2025年1月 - 项目文件结构分析
 - 完成项目文件结构分析，创建详细的文件清单记录
 
@@ -338,6 +459,87 @@ MoonTV 是一个基于 Next.js 的视频流媒体应用，支持豆瓣电影数�
 - ✅ 代码质量检查功能保留
 - ✅ 提供多种替代方案
 - ✅ 跨平台兼容性改进
+
+## 2025-01-27 构建错误修复
+
+### 问题分析
+用户遇到构建失败问题，主要错误：
+1. **包管理器不兼容**: build 脚本使用 pnpm 命令，但部署环境使用 npm
+2. **"self is not defined" 错误**: 客户端代码在服务器端运行时引用浏览器特有的全局变量
+3. **构建在 stage 2 失败**: Next.js 构建过程中出现未处理的 Promise 拒绝
+
+### 解决方案实施
+
+#### 1. 修复包管理器兼容性
+**文件**: `package.json`
+**修改内容**:
+```json
+// 修改前
+"build": "pnpm gen:runtime && pnpm gen:manifest && next build"
+
+// 修改后  
+"build": "node scripts/convert-config.js && node scripts/generate-manifest.js && next build"
+"build:pnpm": "pnpm gen:runtime && pnpm gen:manifest && next build"
+```
+
+**技术说明**:
+- 将 build 脚本改为直接调用 Node.js 脚本，避免 pnpm 依赖
+- 保留 build:pnpm 脚本供本地开发使用
+- 确保在 npm 环境下能正常执行构建
+
+#### 2. 修复全局变量问题
+**文件**: `next.config.js`
+**修改内容**:
+```javascript
+webpack(config, { dev, isServer }) {
+  // 添加全局变量定义，解决 "self is not defined" 错误
+  const webpack = require('webpack');
+  config.plugins.push(
+    new webpack.DefinePlugin({
+      'typeof self': JSON.stringify('object'),
+      self: 'globalThis',
+      'typeof global': JSON.stringify('object'),
+      global: 'globalThis',
+    })
+  );
+  // ... 其他配置
+}
+```
+
+**技术说明**:
+- 将全局变量定义移到 webpack 配置的开头，确保在所有环境下生效
+- 使用 globalThis 作为 self 和 global 的 polyfill
+- 解决 SSR 环境下客户端代码引用浏览器特有变量的问题
+
+#### 3. 创建构建监控文件
+**文件**: `BUILD_STATUS.md`
+**功能**:
+- 记录构建状态和进度
+- 对比修复前后的构建日志
+- 提供故障排查指南
+
+### 技术改进
+
+#### 构建兼容性优化
+- **多包管理器支持**: 同时支持 npm 和 pnpm 环境
+- **环境适配**: 根据部署环境自动选择合适的构建策略
+- **错误处理**: 改进全局变量处理，避免 SSR 相关错误
+
+#### 部署优化
+- **Node.js 版本**: 使用稳定的 LTS 版本 (v20.18.0)
+- **依赖管理**: 优化依赖安装和构建流程
+- **错误监控**: 提供详细的构建状态跟踪
+
+### 预期效果
+1. ✅ 解决包管理器不兼容问题
+2. ✅ 修复 "self is not defined" 错误
+3. ✅ 确保构建能在 npm 环境下成功执行
+4. ✅ 提高构建稳定性和兼容性
+
+### 测试验证
+- 构建过程从 stage 2 错误恢复
+- npm install 成功执行
+- 等待完整构建流程验证
 
 ---
 

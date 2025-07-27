@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "pnpm gen:runtime && pnpm gen:manifest && next dev -H 0.0.0.0",
-    "build": "pnpm gen:runtime && pnpm gen:manifest && next build",
+    "build": "node scripts/convert-config.js && node scripts/generate-manifest.js && next build",
+    "build:pnpm": "pnpm gen:runtime && pnpm gen:manifest && next build",
     "build:npm": "node scripts/npm-build.js",
     "build:next": "next build",
     "build:cf": "pnpm gen:runtime && pnpm gen:manifest && node scripts/build-cf.js && npx @cloudflare/next-on-pages",
