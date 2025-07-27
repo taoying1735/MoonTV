@@ -249,3 +249,100 @@ Build error at stage 2
 错误分析：
 - Husky 命令未找到，导致 prepare 脚本失败
 - 需要修复 package.json 中的 prepare 脚本
+
+=== 第四次构建尝试 (Beasties 版本错误) ===
+20:59:49.314 
+Running build 
+20:59:51.630 
+20:59:51.631 
+builder version 20250704 
+20:59:51.644 
+20:59:51.644 
+Cloning github.com/taoying1735/MoonTV (Branch: main) 
+20:59:53.452 
+Cloning completed: 1769ms 
+20:59:53.531 
+20:59:53.532 
+Switching node version 
+20:59:54.733 
+Now, we're on node version v20.18.0 (npm 10.8.2) 
+20:59:58.416 
+20:59:58.417 
+Running "npm install" 
+21:01:04.445 
+npm error code ETARGET 
+21:01:04.457 
+npm error notarget No matching version found for beasties@^0.0.25. 
+21:01:04.470 
+npm error notarget In most cases you or one of your dependencies are requesting 
+21:01:04.485 
+npm error notarget a package version that doesn't exist. 
+21:01:04.501 
+npm notice 
+21:01:04.515 
+npm notice New major version of npm available! 10.8.2 -> 11.5.1 
+21:01:04.528 
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.5.1  
+21:01:04.540 
+npm notice To update run: npm install -g npm@11.5.1 
+21:01:04.553 
+npm notice 
+21:01:04.565 
+npm error A complete log of this run can be found in: /tmp/home/.npm/_logs/2025-07-27T12_59_58_718Z-debug-0.log 
+21:01:04.569 
+21:01:04.569 
+Build error at stage 2
+
+**错误分析**: 
+- `npm error notarget No matching version found for beasties@^0.0.25` - beasties 包的版本号错误
+- 实际上 beasties 的正确版本是 `0.1.0`，而不是 `0.0.25`
+
+**修复措施**:
+- 将 `package.json` 中的 `"beasties": "^0.0.25"` 修改为 `"beasties": "^0.1.0"`
+
+## 已实施的修复
+
+### 1. 包管理器兼容性修复 ✅
+```json
+// 修改前
+"build": "pnpm gen:runtime && pnpm gen:manifest && next build"
+
+// 修改后
+"build": "node scripts/convert-config.js && node scripts/generate-manifest.js && next build"
+```
+
+### 2. 全局变量错误修复 ✅
+在 next.config.js 中添加 webpack 配置：
+```javascript
+config.plugins.push(
+  new webpack.DefinePlugin({
+    'typeof self': JSON.stringify('object'),
+    self: 'globalThis',
+    'typeof global': JSON.stringify('object'),
+    global: 'globalThis',
+  })
+);
+```
+
+### 3. Husky 安装错误修复 ✅
+```json
+// 修改前
+"prepare": "husky install"
+
+// 修改后
+"prepare": "node -e \"try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') }\""
+```
+
+### 4. Beasties 版本修复 🆕
+```json
+// 修改前
+"beasties": "^0.0.25"
+
+// 修改后
+"beasties": "^0.1.0"
+```
+
+## 预期结果
+- npm install 应该成功完成
+- 构建过程应该顺利进入 next build 阶段
+- 所有依赖包都能正确安装
