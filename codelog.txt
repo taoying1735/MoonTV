@@ -467,6 +467,7 @@ MoonTV 是一个基于 Next.js 的视频流媒体应用，支持豆瓣电影数�
 1. **包管理器不兼容**: build 脚本使用 pnpm 命令，但部署环境使用 npm
 2. **"self is not defined" 错误**: 客户端代码在服务器端运行时引用浏览器特有的全局变量
 3. **构建在 stage 2 失败**: Next.js 构建过程中出现未处理的 Promise 拒绝
+4. **Husky 命令未找到**: 部署环境中 husky 命令不可用，导致 prepare 脚本失败
 
 ### 解决方案实施
 
@@ -511,7 +512,39 @@ webpack(config, { dev, isServer }) {
 - 使用 globalThis 作为 self 和 global 的 polyfill
 - 解决 SSR 环境下客户端代码引用浏览器特有变量的问题
 
-#### 3. 创建构建监控文件
+#### 3. 修复 Husky 安装问题
+**文件**: `package.json`
+**修改内容**:
+```json
+// 修改前
+"prepare": "husky install"
+
+// 修改后
+"prepare": "node -e \"try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') }\""
+```
+
+**技术说明**:
+- 使用 try-catch 机制优雅处理 husky 不可用的情况
+- 在部署环境中跳过 husky 安装，避免构建失败
+- 保持开发环境的 Git hooks 功能
+
+#### 4. 更新已弃用依赖
+**文件**: `package.json`
+**修改内容**:
+```json
+// 修改前
+"critters": "^0.0.25"
+
+// 修改后  
+"beasties": "^0.0.25"
+```
+
+**技术说明**:
+- `beasties` 是 `critters` 的官方继任者
+- 由 Nuxt 团队维护，更加稳定
+- API 兼容，无需修改代码
+
+#### 5. 创建构建监控文件
 **文件**: `BUILD_STATUS.md`
 **功能**:
 - 记录构建状态和进度
@@ -524,21 +557,26 @@ webpack(config, { dev, isServer }) {
 - **多包管理器支持**: 同时支持 npm 和 pnpm 环境
 - **环境适配**: 根据部署环境自动选择合适的构建策略
 - **错误处理**: 改进全局变量处理，避免 SSR 相关错误
+- **部署稳定性**: 消除了部署环境特有的错误
 
 #### 部署优化
 - **Node.js 版本**: 使用稳定的 LTS 版本 (v20.18.0)
-- **依赖管理**: 优化依赖安装和构建流程
+- **依赖管理**: 优化依赖安装和构建流程，使用维护中的依赖包
 - **错误监控**: 提供详细的构建状态跟踪
+- **容错性**: 增强了构建脚本的容错性
 
 ### 预期效果
 1. ✅ 解决包管理器不兼容问题
 2. ✅ 修复 "self is not defined" 错误
 3. ✅ 确保构建能在 npm 环境下成功执行
-4. ✅ 提高构建稳定性和兼容性
+4. ✅ 解决 Husky 安装错误，提高部署成功率
+5. ✅ 减少废弃依赖的警告信息
+6. ✅ 提高构建稳定性和兼容性
 
 ### 测试验证
 - 构建过程从 stage 2 错误恢复
 - npm install 成功执行
+- 构建过程应该顺利进入 next build 阶段
 - 等待完整构建流程验证
 
 ---
